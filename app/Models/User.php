@@ -83,14 +83,20 @@ class User extends Authenticatable
     }
 
     // ─── Accessors ───────────────────────────────────────────
-    public function getAvatarUrlAttribute(): string
-    {
-        if ($this->avatar) {
+ public function getAvatarUrlAttribute(): string
+{
+    if ($this->avatar) {
+        // تحقق من وجود الملف فعلياً
+        $path = storage_path('app/public/' . $this->avatar);
+        if (file_exists($path)) {
             return asset('storage/' . $this->avatar);
         }
-        $name = urlencode($this->name);
-        return "https://ui-avatars.com/api/?name={$name}&background=4F7942&color=fff&size=128&font-size=0.4";
     }
+
+    // صورة افتراضية بالأحرف الأولى
+    $name = urlencode($this->name ?? 'User');
+    return "https://ui-avatars.com/api/?name={$name}&background=2E7D4F&color=fff&size=128&bold=true";
+}
 
     public function getRoleArabicAttribute(): string
     {

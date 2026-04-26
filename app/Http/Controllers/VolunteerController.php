@@ -56,44 +56,53 @@ class VolunteerController extends Controller
         return view('volunteers.profile', compact('user', 'profile', 'skills'));
     }
 
-    public function updateProfile(Request $request)
-    {
-        $user = Auth::user();
+public function updateProfile(Request $request)
+{
+    $user = Auth::user();
 
-        $userData = $request->validate([
-            'name'    => 'required|string|max:255',
-            'phone'   => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'city'    => 'nullable|string|max:100',
-            'bio'     => 'nullable|string|max:1000',
-        ]);
+    $userData = $request->validate([
+        'name'    => 'required|string|max:255',
+        'phone'   => 'nullable|string|max:20',
+        'address' => 'nullable|string',
+        'city'    => 'nullable|string|max:100',
+        'bio'     => 'nullable|string|max:1000',
+    ]);
 
-        $profileData = $request->validate([
-            'skills'              => 'nullable|array',
-            'hours_per_week'      => 'nullable|integer|min:0|max:168',
-            'experience_level'    => 'nullable|in:beginner,intermediate,expert',
-            'has_vehicle'         => 'nullable|boolean',
-            'travel_distance_km'  => 'nullable|integer|min:1|max:500',
-            'availability'        => 'nullable|array',
-        ]);
+    $profileData = $request->validate([
+        'skills'             => 'nullable|array',
+        'hours_per_week'     => 'nullable|integer|min:0|max:168',
+        'experience_level'   => 'nullable|in:beginner,intermediate,expert',
+        'has_vehicle'        => 'nullable|boolean',
+        'travel_distance_km' => 'nullable|integer|min:1|max:500',
+        'availability'       => 'nullable|array',
+    ]);
 
-        if ($request->hasFile('avatar')) {
-            $request->validate(['avatar' => 'image|max:2048']);
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $userData['avatar'] = $path;
+    // ✅ معالجة رفع الصورة
+    if ($request->hasFile('avatar')) {
+        $request->validate(['avatar' => 'image|mimes:jpg,jpeg,png,gif|max:2048']);
+
+        // حذف الصورة القديمة
+        if ($user->avatar && file_exists(storage_path('app/public/' . $user->avatar))) {
+            unlink(storage_path('app/public/' . $user->avatar));
         }
 
-        $user->update($userData);
-
-        $profileData['has_vehicle'] = $request->boolean('has_vehicle');
-
-        $user->volunteerProfile()->updateOrCreate(
-            ['user_id' => $user->id],
-            $profileData
-        );
-
-        return redirect()->route('volunteer.profile')->with('success', 'تم تحديث ملفك الشخصي بنجاح.');
+        // حفظ الصورة الجديدة
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $userData['avatar'] = $path;
     }
+
+    $profileData['has_vehicle'] = $request->boolean('has_vehicle');
+
+    $user->update($userData);
+
+    $user->volunteerProfile()->updateOrCreate(
+        ['user_id' => $user->id],
+        $profileData
+    );
+
+    return redirect()->route('volunteer.profile')
+                     ->with('success', 'تم تحديث ملفك الشخصي بنجاح. ✅');
+}
 
     // ─── Apply to Project ────────────────────────────────────
     public function apply(Request $request, Project $project)

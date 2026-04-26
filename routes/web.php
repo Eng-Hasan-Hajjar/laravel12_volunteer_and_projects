@@ -15,23 +15,20 @@ use App\Http\Controllers\{
 use Illuminate\Support\Facades\Route;
 
 // ─── Public Routes ───────────────────────────────────────────
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
-Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 Route::get('/volunteers', [VolunteerController::class, 'index'])->name('volunteers.index');
 Route::get('/volunteers/leaderboard', [VolunteerController::class, 'leaderboard'])->name('volunteers.leaderboard');
 Route::get('/volunteers/{volunteer}', [VolunteerController::class, 'show'])->name('volunteers.show');
 
-// ─── Auth Routes (Breeze) ────────────────────────────────────
+// ─── Auth Routes ────────────────────────────────────────────
 require __DIR__.'/auth.php';
 
 // ─── Authenticated Routes ────────────────────────────────────
 Route::middleware('auth')->group(function () {
 
-    // Dashboard
+    // Dashboard (handles all roles)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Notifications
@@ -41,12 +38,9 @@ Route::middleware('auth')->group(function () {
 
     // ─── Project Owner & Admin ───────────────────────────────
     Route::middleware('role:project_owner,admin')->group(function () {
+        // IMPORTANT: /projects/create MUST come before /projects/{project}
         Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
         Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
-        Route::get('/projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
-        Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
-        Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
-        Route::post('/projects/{project}/upload-after', [ProjectController::class, 'uploadAfterImages'])->name('projects.uploadAfter');
         Route::get('/my-projects', [ProjectController::class, 'myProjects'])->name('projects.mine');
 
         // Applications
@@ -63,6 +57,12 @@ Route::middleware('auth')->group(function () {
         // Project Updates
         Route::post('/projects/{project}/updates', [ProjectUpdateController::class, 'store'])->name('projects.updates.store');
         Route::delete('/project-updates/{update}', [ProjectUpdateController::class, 'destroy'])->name('projects.updates.destroy');
+
+        // Edit / Delete project
+        Route::get('/projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+        Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
+        Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
+        Route::post('/projects/{project}/upload-after', [ProjectController::class, 'uploadAfterImages'])->name('projects.uploadAfter');
     });
 
     // ─── Volunteer Routes ────────────────────────────────────
@@ -73,19 +73,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/my-applications', [VolunteerController::class, 'myApplications'])->name('volunteer.applications');
     });
 
-    // Allow volunteers to update their own task status
+    // Task status update (volunteer + owner + admin)
     Route::post('/tasks/{task}/status', [TaskController::class, 'updateStatus'])
          ->middleware('role:volunteer,project_owner,admin')
          ->name('tasks.status');
 
-    // Ratings (any authenticated user)
+    // Ratings & Donations (any authenticated user)
     Route::post('/projects/{project}/rate', [RatingController::class, 'store'])->name('ratings.store');
-
-    // Donations (any authenticated user)
     Route::post('/projects/{project}/donate', [DonationController::class, 'store'])->name('donations.store');
 
     // ─── Admin Routes ────────────────────────────────────────
     Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+
         // Users
         Route::get('/users', [AdminController::class, 'users'])->name('users');
         Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
@@ -108,8 +107,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/announcements/{announcement}', [AdminController::class, 'destroyAnnouncement'])->name('announcements.destroy');
 
         // Settings & Cache
-        Route::get('/settings', function() { return view('admin.settings'); })->name('settings');
-        Route::post('/cache/clear', function() {
+        Route::get('/settings', function () {
+            return view('admin.settings');
+        })->name('settings');
+        Route::post('/cache/clear', function () {
             \Illuminate\Support\Facades\Artisan::call('cache:clear');
             \Illuminate\Support\Facades\Artisan::call('view:clear');
             return back()->with('success', 'تم مسح الكاش بنجاح.');
@@ -120,3 +121,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/donations', [AdminController::class, 'donations'])->name('donations');
     });
 });
+
+// ─── Public project routes (after auth group to avoid conflicts) ──
+Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');

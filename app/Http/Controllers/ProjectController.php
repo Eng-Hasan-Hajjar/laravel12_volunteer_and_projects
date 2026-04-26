@@ -48,7 +48,30 @@ class ProjectController extends Controller
 
         return view('projects.show', compact('project', 'canApply', 'userApplication'));
     }
+// في حال نريد جعل السماح للمتطوع في االتطوع في مشروع قيد التنفي>
+    /*
 
+
+public function show(Project $project)
+{
+    $project->load(['owner', 'volunteers.volunteerProfile', 'tasks', 'updates.author', 'donations.donor', 'ratings.rater']);
+
+    // ✅ السماح بالتطوع في approved و in_progress معاً
+    $canApply = Auth::check()
+        && Auth::user()->isVolunteer()
+        && !$project->volunteers()->where('user_id', Auth::id())->exists()
+        && in_array($project->status, ['approved', 'in_progress'])  // ← هنا التعديل
+        && $project->volunteers_assigned < $project->volunteers_needed;
+
+    $userApplication = Auth::check()
+        ? VolunteerApplication::where('project_id', $project->id)
+                              ->where('user_id', Auth::id())->first()
+        : null;
+
+    return view('projects.show', compact('project', 'canApply', 'userApplication'));
+}
+
+    */
     public function create()
     {
         $this->authorize('create', Project::class);
