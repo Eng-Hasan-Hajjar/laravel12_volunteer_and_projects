@@ -17,15 +17,21 @@
                     <span class="badge status-{{ $project->status }}">{{ $project->status_arabic }}</span>
                     <span class="badge priority-{{ $project->priority }}">{{ $project->priority_arabic }}</span>
                     <span class="text-muted" style="font-size:.85rem;"><i class="bi bi-geo-alt me-1"></i>{{ $project->city }}</span>
+                    @if(!$project->has_approved_consent)
+                        <span class="badge" style="background:#fee2e2;color:#b91c1c;font-size:.72rem;">
+                            <i class="bi bi-exclamation-triangle me-1"></i>بلا موافقة خطية
+                        </span>
+                    @endif
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i></a>
-                <a href="{{ route('projects.edit', $project) }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-pencil"></i></a>
+                <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-primary btn-sm" title="تفاصيل المشروع"><i class="bi bi-eye"></i></a>
+                <a href="{{ route('projects.timeline', $project) }}" class="btn btn-outline-success btn-sm" title="المتابعة الشاملة"><i class="bi bi-diagram-3"></i></a>
+                <a href="{{ route('projects.edit', $project) }}" class="btn btn-outline-secondary btn-sm" title="تعديل المشروع"><i class="bi bi-pencil"></i></a>
                 @if($project->status === 'pending')
                 <form action="{{ route('projects.destroy', $project) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذا المشروع؟')">
                     @csrf @method('DELETE')
-                    <button class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></button>
+                    <button class="btn btn-outline-danger btn-sm" title="حذف المشروع"><i class="bi bi-trash"></i></button>
                 </form>
                 @endif
             </div>
@@ -48,6 +54,22 @@
                     <small class="text-muted">نسبة الضرر</small>
                 </div>
             </div>
+        </div>
+
+        {{-- Quick access row to new features --}}
+        <div class="d-flex gap-2 mt-3 pt-3" style="border-top:1px solid var(--border);">
+            <a href="{{ route('projects.timeline', $project) }}" class="btn btn-sm btn-outline-success flex-fill">
+                <i class="bi bi-diagram-3 me-1"></i>المتابعة الشاملة
+            </a>
+            <a href="{{ route('finances.index', $project) }}" class="btn btn-sm btn-outline-primary flex-fill">
+                <i class="bi bi-cash-stack me-1"></i>المالية
+            </a>
+            <a href="{{ route('media.index', $project) }}" class="btn btn-sm btn-outline-secondary flex-fill">
+                <i class="bi bi-images me-1"></i>التوثيق
+            </a>
+            <a href="{{ route('approvals.index', $project) }}" class="btn btn-sm {{ $project->has_approved_consent ? 'btn-outline-success' : 'btn-outline-warning' }} flex-fill">
+                <i class="bi bi-file-earmark-check me-1"></i>الموافقة
+            </a>
         </div>
     </div>
 </div>

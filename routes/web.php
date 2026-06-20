@@ -11,6 +11,11 @@ use App\Http\Controllers\{
     DonationController,
     NotificationController,
     AdminController,
+    ProjectFinanceController,
+    ProjectMilestoneController,
+    ProjectMediaController,
+    ProjectApprovalController,
+    ProjectTimelineController,
 };
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +26,9 @@ Route::get('/projects', [ProjectController::class, 'index'])->name('projects.ind
 Route::get('/volunteers', [VolunteerController::class, 'index'])->name('volunteers.index');
 Route::get('/volunteers/leaderboard', [VolunteerController::class, 'leaderboard'])->name('volunteers.leaderboard');
 Route::get('/volunteers/{volunteer}', [VolunteerController::class, 'show'])->name('volunteers.show');
+
+Route::get('/terms',   fn() => view('pages.terms'))->name('terms');
+Route::get('/privacy', fn() => view('pages.privacy'))->name('privacy');
 
 // ─── Auth Routes ────────────────────────────────────────────
 require __DIR__.'/auth.php';
@@ -35,6 +43,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+    // ═══════════════════════════════════════════════════════════
+    // طلب الدكتور رقم 5: المتابعة الشاملة (Timeline)
+    // متاحة لأي مستخدم مصرّح له بمشاهدة المشروع (Policy تتحقق داخلياً)
+    // وُضعت هنا، قبل أي مسار {project} عام، لتفادي أي تعارض بالترتيب
+    // ═══════════════════════════════════════════════════════════
+    Route::get('/projects/{project}/timeline', [ProjectTimelineController::class, 'show'])
+        ->name('projects.timeline');
+
+    // ═══════════════════════════════════════════════════════════
+    // طلب الدكتور رقم 3 (جزء ثاني): معرض الصور والفيديوهات
+    // القراءة متاحة لأي مستخدم مسجّل دخول مصرّح له بمشاهدة المشروع
+    // ═══════════════════════════════════════════════════════════
+    Route::get('/projects/{project}/media', [ProjectMediaController::class, 'index'])->name('media.index');
+    Route::get('/projects/{project}/media/compare/{milestone}', [ProjectMediaController::class, 'compare'])->name('media.compare');
+
+    // ═══════════════════════════════════════════════════════════
+    // طلب الدكتور رقم 4: عرض الموافقات الخطية (القراءة)
+    // ═══════════════════════════════════════════════════════════
+    Route::get('/projects/{project}/approvals', [ProjectApprovalController::class, 'index'])->name('approvals.index');
 
     // ─── Project Owner & Admin ───────────────────────────────
     Route::middleware('role:project_owner,admin')->group(function () {
@@ -63,6 +91,33 @@ Route::middleware('auth')->group(function () {
         Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
         Route::delete('/projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
         Route::post('/projects/{project}/upload-after', [ProjectController::class, 'uploadAfterImages'])->name('projects.uploadAfter');
+
+        // ═══════════════════════════════════════════════════════
+        // طلب الدكتور رقم 1: المتابعة المالية (إضافة/إدارة)
+        // ═══════════════════════════════════════════════════════
+        Route::get('/projects/{project}/finances', [ProjectFinanceController::class, 'index'])->name('finances.index');
+        Route::get('/projects/{project}/finances/create', [ProjectFinanceController::class, 'create'])->name('finances.create');
+        Route::post('/projects/{project}/finances', [ProjectFinanceController::class, 'store'])->name('finances.store');
+        Route::delete('/finances/{finance}', [ProjectFinanceController::class, 'destroy'])->name('finances.destroy');
+
+        // ═══════════════════════════════════════════════════════
+        // طلب الدكتور رقم 3 (جزء أول): مراحل المشروع (Milestones)
+        // ═══════════════════════════════════════════════════════
+        Route::post('/projects/{project}/milestones', [ProjectMilestoneController::class, 'store'])->name('milestones.store');
+        Route::put('/milestones/{milestone}', [ProjectMilestoneController::class, 'update'])->name('milestones.update');
+        Route::post('/milestones/{milestone}/status', [ProjectMilestoneController::class, 'updateStatus'])->name('milestones.status');
+        Route::delete('/milestones/{milestone}', [ProjectMilestoneController::class, 'destroy'])->name('milestones.destroy');
+        Route::post('/projects/{project}/milestones/reorder', [ProjectMilestoneController::class, 'reorder'])->name('milestones.reorder');
+
+        // رفع الوسائط (صور/فيديوهات قبل وبعد)
+        Route::post('/projects/{project}/media', [ProjectMediaController::class, 'store'])->name('media.store');
+        Route::delete('/media/{media}', [ProjectMediaController::class, 'destroy'])->name('media.destroy');
+
+        // ═══════════════════════════════════════════════════════
+        // طلب الدكتور رقم 4: رفع الموافقة الخطية (لصاحب المشروع)
+        // ═══════════════════════════════════════════════════════
+        Route::post('/projects/{project}/approvals', [ProjectApprovalController::class, 'store'])->name('approvals.store');
+        Route::delete('/approvals/{approval}', [ProjectApprovalController::class, 'destroy'])->name('approvals.destroy');
     });
 
     // ─── Volunteer Routes ────────────────────────────────────
@@ -119,6 +174,18 @@ Route::middleware('auth')->group(function () {
         // Reports & Donations
         Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
         Route::get('/donations', [AdminController::class, 'donations'])->name('donations');
+
+        // ═══════════════════════════════════════════════════════
+        // طلب الدكتور رقم 1: اعتماد/رفض الحركات المالية (للمشرف فقط)
+        // ═══════════════════════════════════════════════════════
+        Route::post('/finances/{finance}/verify', [ProjectFinanceController::class, 'verify'])->name('finances.verify');
+        Route::post('/finances/{finance}/reject', [ProjectFinanceController::class, 'reject'])->name('finances.reject');
+
+        // ═══════════════════════════════════════════════════════
+        // طلب الدكتور رقم 4: اعتماد/رفض الموافقات الخطية (للمشرف فقط)
+        // ═══════════════════════════════════════════════════════
+        Route::post('/approvals/{approval}/approve', [ProjectApprovalController::class, 'approve'])->name('approvals.approve');
+        Route::post('/approvals/{approval}/reject', [ProjectApprovalController::class, 'reject'])->name('approvals.reject');
     });
 });
 

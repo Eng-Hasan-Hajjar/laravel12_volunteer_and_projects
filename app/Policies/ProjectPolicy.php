@@ -26,4 +26,20 @@ class ProjectPolicy
 
     public function approve(User $user): bool { return $user->isAdmin(); }
     public function reject(User $user): bool  { return $user->isAdmin(); }
+
+
+
+    // صلاحية اعتماد/رفض الحركات المالية - للمشرف فقط
+public function verifyFinance(User $user, Project $project): bool
+{
+    return $user->role === 'admin';
+}
+ 
+// صلاحية مراجعة الموافقات الخطية - للمشرف فقط
+public function reviewApprovals(User $user, Project $project): bool
+{
+    return $user->role === 'admin';
+}
+
+
 }

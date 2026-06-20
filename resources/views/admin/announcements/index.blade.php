@@ -8,15 +8,20 @@
             <h1><i class="bi bi-megaphone me-2"></i>الإعلانات</h1>
             <p>إدارة الإعلانات المنشورة على المنصة</p>
         </div>
-        <a href="{{ route('admin.announcements.create') }}"
-           class="btn btn-sm"
-           style="background:rgba(255,255,255,.25);color:#fff;
-                  border:1px solid rgba(255,255,255,.4);font-weight:600;">
-            <i class="bi bi-plus-circle me-1"></i>إعلان جديد
-        </a>
+       
     </div>
 </div>
 
+
+
+   <a href="{{ route('admin.announcements.create') }}"
+           class="btn btn-sm"
+           style="background:rgba(255,255,255,.25);color:#d60404;
+                  border:1px solid rgba(255,255,255,.4);font-weight:600;">
+            <i class="bi bi-plus-circle me-1"></i>إعلان جديد
+        </a>
+
+        
 <div class="card">
     <div class="card-body p-0">
         @forelse($announcements as $ann)

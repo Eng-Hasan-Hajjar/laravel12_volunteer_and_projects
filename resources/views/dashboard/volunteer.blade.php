@@ -26,13 +26,7 @@
                     @endif
                 </div>
             </div>
-            <div class="col-auto">
-                {{-- ✅ الجديد — أضف form بدلاً من link مباشر --}}
-                <a href="{{ url('/my-profile') }}" class="btn btn-sm" style="background:rgba(255,255,255,.2);color:#fff;
-              border:1px solid rgba(255,255,255,.4);">
-                    <i class="bi bi-pencil me-1"></i>تعديل الملف
-                </a>
-            </div>
+          
         </div>
     </div>
 

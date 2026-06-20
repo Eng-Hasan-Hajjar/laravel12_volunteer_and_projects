@@ -168,7 +168,7 @@
             <div class="mt-4 mb-3">
                 <label class="d-flex align-items-start gap-2" style="cursor:pointer;font-size:.88rem;color:var(--text-mid);">
                     <input type="checkbox" required style="accent-color:var(--primary);margin-top:2px;flex-shrink:0;">
-                    أوافق على <a href="#" style="color:var(--primary);">شروط الاستخدام</a> و<a href="#" style="color:var(--primary);">سياسة الخصوصية</a>
+                    أوافق على <a href="{{ route('terms') }}" style="color:var(--primary);">شروط الاستخدام</a> و<a href="{{ route('privacy') }}" style="color:var(--primary);">سياسة الخصوصية</a>
                 </label>
             </div>
 

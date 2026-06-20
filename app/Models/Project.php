@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Project extends Model
 {
@@ -17,12 +19,30 @@ class Project extends Model
         'estimated_days', 'start_date', 'end_date', 'progress_percentage',
         'before_images', 'after_images', 'rejection_reason', 'notes',
         'estimated_cost', 'actual_cost',
+        'damage_type',
+'damage_percentage',
+'damage_date',
+'area_sqm',
+'estimated_cost',
+'affected_employees_count',
+'commercial_register_no',
+'owner_legal_name',
+'owner_contact_phone',
+'has_approved_consent',
+
+
     ];
 
     protected $casts = [
         'required_skills' => 'array',
         'start_date'      => 'date',
         'end_date'        => 'date',
+
+        'damage_date'          => 'date',
+'estimated_cost'       => 'decimal:2',
+'has_approved_consent' => 'boolean',
+
+
     ];
 
     // ─── Relationships ───────────────────────────────────────
@@ -160,4 +180,104 @@ class Project extends Model
         if ($this->damage_percentage >= 25) return 'متوسط';
         return 'خفيف';
     }
+
+
+
+    
+public function finances(): HasMany
+{
+    return $this->hasMany(\App\Models\ProjectFinance::class);
+}
+ 
+public function verifiedFinances(): HasMany
+{
+    return $this->finances()->where('status', 'verified');
+}
+ 
+public function financeDonations(): HasMany
+{
+    return $this->finances()->where('entry_type', 'donation');
+}
+public function expenses(): HasMany
+{
+    return $this->finances()->where('entry_type', 'expense');
+}
+ 
+public function milestones(): HasMany
+{
+    return $this->hasMany(\App\Models\ProjectMilestone::class)->orderBy('order_index');
+}
+ 
+public function media(): HasMany
+{
+    return $this->hasMany(\App\Models\ProjectMedia::class);
+}
+ 
+public function beforeMedia(): HasMany
+{
+    return $this->media()->where('phase', 'before');
+}
+ 
+public function afterMedia(): HasMany
+{
+    return $this->media()->where('phase', 'after');
+}
+ 
+public function approvals(): HasMany
+{
+    return $this->hasMany(\App\Models\ProjectApproval::class);
+}
+ 
+public function latestApproval(): HasOne
+{
+    return $this->hasOne(\App\Models\ProjectApproval::class)->latestOfMany();
+}
+ 
+// ─── Financial Summary Accessors ────────────────────────────
+ 
+public function getTotalDonationsAttribute(): float
+{
+    return (float) $this->finances()
+        ->where('entry_type', 'donation')
+        ->where('status', 'verified')
+        ->sum('amount');
+}
+ 
+public function getTotalExpensesAttribute(): float
+{
+    return (float) $this->finances()
+        ->where('entry_type', 'expense')
+        ->where('status', 'verified')
+        ->sum('amount');
+}
+ 
+public function getRemainingBalanceAttribute(): float
+{
+    return $this->total_donations - $this->total_expenses;
+}
+ 
+public function getDamageTypeArabicAttribute(): ?string
+{
+    if (!$this->damage_type) return null;
+    return match ($this->damage_type) {
+        'structural'  => 'ضرر إنشائي (هيكلي)',
+        'electrical'  => 'ضرر كهربائي',
+        'plumbing'    => 'ضرر بالسباكة',
+        'fire'        => 'حريق',
+        'flooding'    => 'غمر بالمياه',
+        'equipment'   => 'أضرار بالمعدات',
+        'cosmetic'    => 'أضرار تجميلية سطحية',
+        'mixed'       => 'أضرار متعددة',
+        default       => $this->damage_type,
+    };
+}
+ 
+// قيد منطقي: هل يمكن بدء تنفيذ المشروع؟ (لازم تكون الموافقة الخطية معتمدة)
+public function getCanStartExecutionAttribute(): bool
+{
+    return (bool) $this->has_approved_consent;
+}
+
+
+
 }

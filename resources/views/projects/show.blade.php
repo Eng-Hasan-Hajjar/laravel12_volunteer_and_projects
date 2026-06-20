@@ -10,6 +10,8 @@
     </ol>
 </nav>
 
+@include('projects.nav-tabs', ['project' => $project, 'active' => 'details'])
+
 <div class="row g-4">
     {{-- Main Content --}}
     <div class="col-lg-8">

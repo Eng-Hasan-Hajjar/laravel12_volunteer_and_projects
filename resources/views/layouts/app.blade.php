@@ -468,12 +468,12 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('volunteers.*') ? 'active' : '' }}" href="{{ route('volunteers.index') }}">
+                <a class="nav-link {{ request()->routeIs('volunteers.index') || request()->routeIs('volunteers.show') ? 'active' : '' }}" href="{{ route('volunteers.index') }}">
                     <i class="bi bi-people me-1"></i>المتطوعون
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('volunteers.leaderboard') }}">
+                <a class="nav-link {{ request()->routeIs('volunteers.leaderboard') ? 'active' : '' }}" href="{{ route('volunteers.leaderboard') }}">
                     <i class="bi bi-trophy me-1"></i>المتصدرون
                 </a>
             </li>
