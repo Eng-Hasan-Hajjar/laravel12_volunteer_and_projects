@@ -191,3 +191,9 @@ Route::middleware('auth')->group(function () {
 
 // ─── Public project routes (after auth group to avoid conflicts) ──
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+
+Route::middleware(['auth', 'role:committee'])->group(function () {
+    Route::get('/committee/reviews', [CommitteeController::class, 'index'])->name('committee.reviews');
+    Route::post('/committee/review/{project}', [CommitteeController::class, 'review'])->name('committee.review');
+});
+
