@@ -107,4 +107,13 @@ class User extends Authenticatable
             default         => $this->role,
         };
     }
+
+
+    // أضف هذا السطر داخل كلاس User
+public function isCommittee(): bool 
+{ 
+    return $this->role === 'admin' || $this->role === 'committee'; 
+}
+
+
 }

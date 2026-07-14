@@ -197,3 +197,12 @@ Route::middleware(['auth', 'role:committee'])->group(function () {
     Route::post('/committee/review/{project}', [CommitteeController::class, 'review'])->name('committee.review');
 });
 
+use App\Http\Controllers\ProjectVerificationController;
+
+// مسارات لوحة اللجنة
+Route::middleware(['auth'])->prefix('committee')->name('committee.')->group(function () {
+    Route::get('/reviews', [ProjectVerificationController::class, 'index'])->name('index');
+    Route::get('/review/{project}', [ProjectVerificationController::class, 'show'])->name('show');
+    Route::post('/review/{project}', [ProjectVerificationController::class, 'review'])->name('review');
+});
+
