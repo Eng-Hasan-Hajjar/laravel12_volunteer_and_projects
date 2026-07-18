@@ -41,7 +41,7 @@
                         #{{ $project->id }}</div>
                     <h2 style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.6rem;margin-bottom:8px;">
                         {{ $project->title }}</h2>
-                        
+
 
                     <div class="d-flex flex-wrap gap-4 text-muted mb-4" style="font-size:.9rem;">
                         <span><i class="bi bi-geo-alt me-1"></i>{{ $project->address }}، {{ $project->city }}</span>
@@ -89,6 +89,33 @@
                             <small class="text-muted">مهام مكتملة</small>
                         </div>
                     </div>
+
+                    @if($project->funding_type)
+                    <div class="mb-4" style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:16px 18px;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-cash-stack" style="font-size:1.3rem;color:#1d4ed8;"></i>
+                            <strong style="color:#1d4ed8;">معلومات التمويل</strong>
+                        </div>
+                        <div class="d-flex flex-wrap gap-4">
+                            <div>
+                                <div style="font-weight:700;font-size:.95rem;">{{ $project->funding_type_arabic }}</div>
+                                <small class="text-muted">نوع التمويل</small>
+                            </div>
+                            @if($project->funding_organization)
+                            <div>
+                                <div style="font-weight:700;font-size:.95rem;">{{ $project->funding_organization }}</div>
+                                <small class="text-muted">الجهة الداعمة</small>
+                            </div>
+                            @endif
+                            @if($project->funding_amount)
+                            <div>
+                                <div style="font-weight:700;font-size:.95rem;color:#1d4ed8;">{{ number_format($project->funding_amount, 0) }} ل.س</div>
+                                <small class="text-muted">قيمة التمويل</small>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
 
                     <h5 style="font-weight:700;margin-bottom:12px;">وصف المشروع</h5>
                     <p style="color:var(--text-mid);line-height:1.9;">{{ $project->description }}</p>

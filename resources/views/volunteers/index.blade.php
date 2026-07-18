@@ -56,9 +56,8 @@
                     </div>
                     @if(!empty($vol->volunteerProfile->skills))
                         <div class="d-flex flex-wrap gap-1 mb-3">
-                            @php $allSkills = \App\Models\VolunteerProfile::allSkills(); @endphp
-                            @foreach(array_slice($vol->volunteerProfile->skills, 0, 3) as $skill)
-                                <span class="badge" style="background:var(--primary-pale);color:var(--primary);font-size:.75rem;">{{ $allSkills[$skill] ?? $skill }}</span>
+                            @foreach(array_slice($vol->volunteerProfile->skills_arabic, 0, 3) as $label)
+                                <span class="badge" style="background:var(--primary-pale);color:var(--primary);font-size:.75rem;">{{ $label }}</span>
                             @endforeach
                             @if(count($vol->volunteerProfile->skills) > 3)
                                 <span class="badge" style="background:#f1f5f9;color:#64748b;font-size:.75rem;">+{{ count($vol->volunteerProfile->skills) - 3 }}</span>

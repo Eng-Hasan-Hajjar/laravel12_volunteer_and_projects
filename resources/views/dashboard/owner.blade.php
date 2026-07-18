@@ -8,9 +8,7 @@
             <h1><i class="bi bi-buildings me-2"></i>مشاريعي</h1>
             <p>مرحباً {{ $user->name }} — تابع مشاريعك وفرق التطوع</p>
         </div>
-        <a href="{{ route('projects.create') }}" class="btn btn-sm" style="background:rgba(255,255,255,.25);color:#fff;border:1px solid rgba(255,255,255,.4);font-weight:600;">
-            <i class="bi bi-plus-circle me-1"></i>إضافة مشروع
-        </a>
+      
     </div>
 </div>
 

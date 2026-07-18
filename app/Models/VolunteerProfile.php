@@ -9,8 +9,8 @@ class VolunteerProfile extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id', 'skills', 'availability', 'hours_per_week',
+protected $fillable = [
+        'user_id', 'skills', 'other_skill_note', 'availability', 'hours_per_week',
         'total_hours_contributed', 'points', 'experience_level',
         'certifications', 'has_vehicle', 'travel_distance_km',
         'completed_projects', 'rating', 'rating_count',
@@ -88,9 +88,19 @@ class VolunteerProfile extends Model
         return array_merge(end($tiers), ['points_to_next' => 0, 'next_label' => null, 'progress' => 100]);
     }
 
+/**
+     * أسماء المهارات بالعربي — إذا اختار المتطوع "أخرى" وكتب توضيحاً،
+     * بيتعوّض النص العام "أخرى" بالنص يلي كتبه هو بنفسه.
+     */
     public function getSkillsArabicAttribute(): array
     {
-        $all = self::allSkills();
-        return array_filter($all, fn($key) => in_array($key, $this->skills ?? []), ARRAY_FILTER_USE_KEY);
+        $all  = self::allSkills();
+        $mine = array_filter($all, fn($key) => in_array($key, $this->skills ?? []), ARRAY_FILTER_USE_KEY);
+
+        if (isset($mine['other']) && !empty($this->other_skill_note)) {
+            $mine['other'] = $this->other_skill_note;
+        }
+
+        return $mine;
     }
 }

@@ -19,34 +19,36 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-$request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role'     => ['required', 'in:volunteer,project_owner'],
-            'phone'    => ['nullable', 'string', 'max:20'],
-            'city'     => ['nullable', 'string', 'max:100'],
-            'skills'   => ['nullable', 'array'],
-            'skills.*' => ['in:'.implode(',', array_keys(VolunteerProfile::allSkills()))],
+            'role' => ['required', 'in:volunteer,project_owner'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'skills' => ['nullable', 'array'],
+            'skills.*' => ['in:' . implode(',', array_keys(VolunteerProfile::allSkills()))],
+            'other_skill_note' => ['nullable', 'string', 'max:255'],
         ]);
 
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => $request->role,
-            'phone'    => $request->phone,
-            'city'     => $request->city,
+            'role' => $request->role,
+            'phone' => $request->phone,
+            'city' => $request->city,
         ]);
 
         // إنشاء ملف المتطوع تلقائياً مع حفظ المهارات المختارة أثناء التسجيل
         if ($user->isVolunteer()) {
             VolunteerProfile::create([
                 'user_id' => $user->id,
-                'skills'  => $request->input('skills', []),
+                'skills' => $request->input('skills', []),
+                'other_skill_note' => $request->input('other_skill_note'),
             ]);
         }
-        
+
 
         event(new Registered($user));
         Auth::login($user);

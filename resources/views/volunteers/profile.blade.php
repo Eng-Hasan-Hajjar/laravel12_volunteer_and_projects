@@ -129,6 +129,9 @@
                                 </div>
                                 @endforeach
                             </div>
+                            <input type="text" name="other_skill_note" class="form-control form-control-sm mt-2"
+                                placeholder="إذا اخترت «أخرى» وضّح هون شو مهارتك (مثال: نجارة ألمنيوم، برمجة...)"
+                                value="{{ old('other_skill_note', $profile->other_skill_note ?? '') }}" maxlength="255">
                         </div>
                         <div class="col-12">
                             <label class="form-label">أيام التوفر</label>

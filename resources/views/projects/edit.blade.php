@@ -67,9 +67,27 @@
                             @endforeach
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label">نوع التمويل</label>
+                        <select name="funding_type" id="fundingTypeEdit" class="form-select" onchange="toggleFundingFieldsEdit()">
+                            <option value="">-- اختر --</option>
+                            <option value="self_funded" {{ old('funding_type', $project->funding_type) === 'self_funded' ? 'selected' : '' }}>تمويل ذاتي</option>
+                            <option value="individual_donations" {{ old('funding_type', $project->funding_type) === 'individual_donations' ? 'selected' : '' }}>تبرعات أفراد</option>
+                            <option value="international_org" {{ old('funding_type', $project->funding_type) === 'international_org' ? 'selected' : '' }}>منظمة دولية</option>
+                            <option value="government" {{ old('funding_type', $project->funding_type) === 'government' ? 'selected' : '' }}>جهة حكومية</option>
+                            <option value="mixed" {{ old('funding_type', $project->funding_type) === 'mixed' ? 'selected' : '' }}>تمويل مختلط</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4" id="fundingOrgWrapEdit">
+                        <label class="form-label">اسم الجهة الداعمة</label>
+                        <input type="text" name="funding_organization" class="form-control" value="{{ old('funding_organization', $project->funding_organization) }}" placeholder="مثال: اليونيسف">
+                    </div>
+                    <div class="col-md-4" id="fundingAmountWrapEdit">
+                        <label class="form-label">قيمة التمويل (ل.س)</label>
+                        <input type="number" name="funding_amount" class="form-control" value="{{ old('funding_amount', $project->funding_amount) }}" min="0">
+                    </div>
                     <div class="col-12"><label class="form-label">ملاحظات</label>
-                        <textarea name="notes" class="form-control" rows="2">{{ old('notes', $project->notes) }}</textarea></div>
-                    <div class="col-12 d-flex gap-3">
+                        <textarea name="notes" class="form-control" rows="2">{{ old('notes', $project->notes) }}</textarea></div>                   <div class="col-12 d-flex gap-3">
                         <button type="submit" class="btn btn-primary px-5 fw-bold">حفظ التعديلات</button>
                         <a href="{{ route('projects.show', $project) }}" class="btn btn-outline-secondary">إلغاء</a>
                     </div>
@@ -78,4 +96,15 @@
         </div></div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+function toggleFundingFieldsEdit() {
+    const type = document.getElementById('fundingTypeEdit').value;
+    document.getElementById('fundingOrgWrapEdit').style.display = (type !== '' && type !== 'self_funded') ? 'block' : 'none';
+    document.getElementById('fundingAmountWrapEdit').style.display = (type !== '') ? 'block' : 'none';
+}
+document.addEventListener('DOMContentLoaded', toggleFundingFieldsEdit);
+</script>
+@endpush
 @endsection

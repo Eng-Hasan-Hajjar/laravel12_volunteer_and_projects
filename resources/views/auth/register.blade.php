@@ -120,6 +120,10 @@
                     @endforeach
                 </div>
                 @error('skills')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+
+                <input type="text" name="other_skill_note" class="form-control form-control-sm mt-2"
+                    placeholder="إذا اخترت «أخرى» وضّح هون شو مهارتك (مثال: نجارة ألمنيوم، برمجة...)"
+                    value="{{ old('other_skill_note') }}" maxlength="255">
             </div>
 
             <div class="row g-3">

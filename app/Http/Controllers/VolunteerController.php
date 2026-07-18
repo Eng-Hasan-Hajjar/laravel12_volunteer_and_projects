@@ -70,6 +70,7 @@ public function updateProfile(Request $request)
 
     $profileData = $request->validate([
         'skills'             => 'nullable|array',
+        'other_skill_note'   => 'nullable|string|max:255',
         'hours_per_week'     => 'nullable|integer|min:0|max:168',
         'experience_level'   => 'nullable|in:beginner,intermediate,expert',
         'has_vehicle'        => 'nullable|boolean',

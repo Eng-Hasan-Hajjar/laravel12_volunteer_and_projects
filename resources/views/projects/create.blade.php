@@ -82,6 +82,25 @@
                                 <label class="form-label">التكلفة التقديرية (ل.س)</label>
                                 <input type="number" name="estimated_cost" class="form-control" value="{{ old('estimated_cost') }}" min="0" placeholder="اختياري">
                             </div>
+                            <div class="col-md-6">
+                                <label class="form-label">نوع التمويل</label>
+                                <select name="funding_type" id="fundingType" class="form-select" onchange="toggleFundingFields()">
+                                    <option value="">-- اختر --</option>
+                                    <option value="self_funded" {{ old('funding_type') === 'self_funded' ? 'selected' : '' }}>تمويل ذاتي (من صاحب المشروع)</option>
+                                    <option value="individual_donations" {{ old('funding_type') === 'individual_donations' ? 'selected' : '' }}>تبرعات أفراد</option>
+                                    <option value="international_org" {{ old('funding_type') === 'international_org' ? 'selected' : '' }}>منظمة دولية</option>
+                                    <option value="government" {{ old('funding_type') === 'government' ? 'selected' : '' }}>جهة حكومية</option>
+                                    <option value="mixed" {{ old('funding_type') === 'mixed' ? 'selected' : '' }}>تمويل مختلط</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="fundingOrgWrap" style="display:none;">
+                                <label class="form-label">اسم الجهة الداعمة</label>
+                                <input type="text" name="funding_organization" class="form-control" value="{{ old('funding_organization') }}" placeholder="مثال: اليونيسف، الهلال الأحمر السوري...">
+                            </div>
+                            <div class="col-md-6" id="fundingAmountWrap" style="display:none;">
+                                <label class="form-label">قيمة التمويل (ل.س)</label>
+                                <input type="number" name="funding_amount" class="form-control" value="{{ old('funding_amount') }}" min="0" placeholder="اختياري">
+                            </div>
                             <div class="col-12">
                                 <label class="form-label">المهارات المطلوبة</label>
                                 <div class="row g-2">
@@ -182,6 +201,13 @@ function previewImages(input) {
         reader.readAsDataURL(file);
     });
 }
+
+function toggleFundingFields() {
+    const type = document.getElementById('fundingType').value;
+    document.getElementById('fundingOrgWrap').style.display = (type !== '' && type !== 'self_funded') ? 'block' : 'none';
+    document.getElementById('fundingAmountWrap').style.display = (type !== '') ? 'block' : 'none';
+}
+document.addEventListener('DOMContentLoaded', toggleFundingFields);
 </script>
 @endpush
 @endsection

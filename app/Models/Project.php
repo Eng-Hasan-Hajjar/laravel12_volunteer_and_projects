@@ -45,8 +45,11 @@ class Project extends Model
         'affected_employees_count',
         'commercial_register_no',
         'owner_legal_name',
-        'owner_contact_phone',
+          'owner_contact_phone',
         'has_approved_consent',
+        'funding_type',
+        'funding_organization',
+        'funding_amount',
 
 
     ];
@@ -56,12 +59,15 @@ class Project extends Model
         'start_date' => 'date',
         'end_date' => 'date',
 
-        'damage_date' => 'date',
+     'damage_date' => 'date',
         'estimated_cost' => 'decimal:2',
         'has_approved_consent' => 'boolean',
-
+        'funding_amount' => 'decimal:2',
 
     ];
+
+
+    
 
     // ─── Relationships ───────────────────────────────────────
     public function owner()
@@ -155,6 +161,17 @@ class Project extends Model
             'cancelled' => 'ملغي',
             'rejected' => 'مرفوض',
             default => $this->status,
+        };
+    }
+    public function getFundingTypeArabicAttribute(): ?string
+    {
+        return match ($this->funding_type) {
+            'self_funded'          => 'تمويل ذاتي',
+            'individual_donations' => 'تبرعات أفراد',
+            'international_org'    => 'منظمة دولية',
+            'government'           => 'جهة حكومية',
+            'mixed'                => 'تمويل مختلط',
+            default                => null,
         };
     }
 

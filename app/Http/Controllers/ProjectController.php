@@ -101,6 +101,9 @@ public function show(Project $project)
             'volunteers_needed' => 'required|integer|min:1|max:100',
             'estimated_days' => 'required|integer|min:1',
             'estimated_cost' => 'nullable|numeric|min:0',
+            'funding_type' => 'nullable|in:self_funded,individual_donations,international_org,government,mixed',
+            'funding_organization' => 'nullable|string|max:255',
+            'funding_amount' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'before_images.*' => 'nullable|image|max:5120',
         ]);
@@ -145,6 +148,9 @@ public function show(Project $project)
             'volunteers_needed' => 'required|integer|min:1',
             'estimated_days' => 'required|integer|min:1',
             'estimated_cost' => 'nullable|numeric|min:0',
+            'funding_type' => 'nullable|in:self_funded,individual_donations,international_org,government,mixed',
+            'funding_organization' => 'nullable|string|max:255',
+            'funding_amount' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
 
