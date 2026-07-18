@@ -54,6 +54,15 @@
     </a>
 @endif
 
+{{-- Committee Links --}}
+@if($user->isCommittee())
+    <div class="sidebar-section-title">لجنة التحقق</div>
+    <a href="{{ route('committee.index') }}" class="sidebar-link {{ request()->routeIs('committee.*') ? 'active' : '' }}">
+        <i class="bi bi-clipboard-check"></i> مراجعة المشاريع
+    </a>
+@endif
+
+
 {{-- Admin Links --}}
 @if($user->isAdmin())
     <div class="sidebar-section-title">الإدارة</div>

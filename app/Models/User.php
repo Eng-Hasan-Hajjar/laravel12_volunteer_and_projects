@@ -13,9 +13,18 @@ class User extends Authenticatable
     use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
-        'name', 'email', 'password', 'role', 'phone',
-        'address', 'city', 'avatar', 'bio', 'is_active',
-        'latitude', 'longitude',
+        'name',
+        'email',
+        'password',
+        'role',
+        'phone',
+        'address',
+        'city',
+        'avatar',
+        'bio',
+        'is_active',
+        'latitude',
+        'longitude',
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -30,9 +39,18 @@ class User extends Authenticatable
     }
 
     // ─── Roles ──────────────────────────────────────────────
-    public function isAdmin(): bool        { return $this->role === 'admin'; }
-    public function isVolunteer(): bool    { return $this->role === 'volunteer'; }
-    public function isProjectOwner(): bool { return $this->role === 'project_owner'; }
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+    public function isVolunteer(): bool
+    {
+        return $this->role === 'volunteer';
+    }
+    public function isProjectOwner(): bool
+    {
+        return $this->role === 'project_owner';
+    }
 
     // ─── Relationships ───────────────────────────────────────
     public function volunteerProfile()
@@ -48,8 +66,8 @@ class User extends Authenticatable
     public function assignedProjects()
     {
         return $this->belongsToMany(Project::class, 'project_volunteer')
-                    ->withPivot('status', 'role', 'joined_at', 'hours_contributed')
-                    ->withTimestamps();
+            ->withPivot('status', 'role', 'joined_at', 'hours_contributed')
+            ->withTimestamps();
     }
 
     public function tasks()
@@ -83,37 +101,38 @@ class User extends Authenticatable
     }
 
     // ─── Accessors ───────────────────────────────────────────
- public function getAvatarUrlAttribute(): string
-{
-    if ($this->avatar) {
-        // تحقق من وجود الملف فعلياً
-        $path = storage_path('app/public/' . $this->avatar);
-        if (file_exists($path)) {
-            return asset('storage/' . $this->avatar);
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar) {
+            // تحقق من وجود الملف فعلياً
+            $path = storage_path('app/public/' . $this->avatar);
+            if (file_exists($path)) {
+                return asset('storage/' . $this->avatar);
+            }
         }
-    }
 
-    // صورة افتراضية بالأحرف الأولى
-    $name = urlencode($this->name ?? 'User');
-    return "https://ui-avatars.com/api/?name={$name}&background=2E7D4F&color=fff&size=128&bold=true";
-}
+        // صورة افتراضية بالأحرف الأولى
+        $name = urlencode($this->name ?? 'User');
+        return "https://ui-avatars.com/api/?name={$name}&background=2E7D4F&color=fff&size=128&bold=true";
+    }
 
     public function getRoleArabicAttribute(): string
     {
-        return match($this->role) {
-            'admin'         => 'مدير',
-            'volunteer'     => 'متطوع',
+        return match ($this->role) {
+            'admin' => 'مدير',
+            'volunteer' => 'متطوع',
             'project_owner' => 'صاحب مشروع',
-            default         => $this->role,
+            'committee' => 'عضو لجنة',
+            default => $this->role,
         };
     }
 
 
     // أضف هذا السطر داخل كلاس User
-public function isCommittee(): bool 
-{ 
-    return $this->role === 'admin' || $this->role === 'committee'; 
-}
+    public function isCommittee(): bool
+    {
+        return $this->role === 'admin' || $this->role === 'committee';
+    }
 
 
 }

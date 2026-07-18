@@ -19,13 +19,15 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+$request->validate([
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role'     => ['required', 'in:volunteer,project_owner'],
             'phone'    => ['nullable', 'string', 'max:20'],
             'city'     => ['nullable', 'string', 'max:100'],
+            'skills'   => ['nullable', 'array'],
+            'skills.*' => ['in:'.implode(',', array_keys(VolunteerProfile::allSkills()))],
         ]);
 
         $user = User::create([
@@ -37,10 +39,14 @@ class RegisteredUserController extends Controller
             'city'     => $request->city,
         ]);
 
-        // Create volunteer profile automatically
+        // إنشاء ملف المتطوع تلقائياً مع حفظ المهارات المختارة أثناء التسجيل
         if ($user->isVolunteer()) {
-            VolunteerProfile::create(['user_id' => $user->id]);
+            VolunteerProfile::create([
+                'user_id' => $user->id,
+                'skills'  => $request->input('skills', []),
+            ]);
         }
+        
 
         event(new Registered($user));
         Auth::login($user);

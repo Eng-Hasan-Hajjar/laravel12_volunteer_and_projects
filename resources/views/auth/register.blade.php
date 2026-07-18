@@ -97,8 +97,29 @@
                             <span class="role-desc">أبحث عن متطوعين لإعادة إعمار مشروعي</span>
                         </label>
                     </div>
-                </div>
+               </div>
                 @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
+            {{-- تظهر فقط عند اختيار "متطوع" --}}
+            <div class="mb-4" id="volunteerSkillsSection">
+                <label class="form-label d-block mb-2">
+                    ما هي مهاراتك؟
+                    <span class="text-muted" style="font-weight:400;">(اختياري، بتساعدنا نرشّح لك المشاريع المناسبة)</span>
+                </label>
+                <div class="row g-2">
+                    @foreach(\App\Models\VolunteerProfile::allSkills() as $key => $label)
+                    <div class="col-6 col-md-4">
+                        <label class="d-flex align-items-center gap-2 p-2 border rounded-2" style="cursor:pointer;">
+                            <input type="checkbox" name="skills[]" value="{{ $key }}"
+                                {{ in_array($key, old('skills', [])) ? 'checked' : '' }}
+                                style="accent-color:var(--primary);">
+                            <span style="font-size:.88rem;">{{ $label }}</span>
+                        </label>
+                    </div>
+                    @endforeach
+                </div>
+                @error('skills')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
             </div>
 
             <div class="row g-3">
@@ -203,6 +224,16 @@ function checkStrength(pw) {
     bar.style.background = colors[score-1] || '#e2e8f0';
     bar.style.width      = widths[score-1] || '0%';
 }
+
+function toggleSkillsSection() {
+    const isVolunteer = document.getElementById('role_volunteer').checked;
+    document.getElementById('volunteerSkillsSection').style.display = isVolunteer ? 'block' : 'none';
+}
+document.getElementById('role_volunteer').addEventListener('change', toggleSkillsSection);
+document.getElementById('role_owner').addEventListener('change', toggleSkillsSection);
+document.addEventListener('DOMContentLoaded', toggleSkillsSection);
+
+
 </script>
 </body>
 </html>

@@ -38,6 +38,7 @@
                                 <option value="volunteer"     {{ old('role','volunteer') === 'volunteer'     ? 'selected':'' }}>متطوع</option>
                                 <option value="project_owner" {{ old('role') === 'project_owner' ? 'selected':'' }}>صاحب مشروع</option>
                                 <option value="admin"         {{ old('role') === 'admin' ? 'selected':'' }}>مدير</option>
+                                <option value="committee"     {{ old('role') === 'committee' ? 'selected':'' }}>عضو لجنة</option>
                             </select>
                             @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>

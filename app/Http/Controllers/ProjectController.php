@@ -13,24 +13,29 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $query = Project::with('owner')
-                    ->whereIn('status', ['approved', 'in_progress', 'completed']);
+            ->whereIn('status', ['approved', 'in_progress', 'completed']);
 
-        if ($request->city)     $query->where('city', $request->city);
-        if ($request->type)     $query->where('type', $request->type);
-        if ($request->priority) $query->where('priority', $request->priority);
-        if ($request->status)   $query->where('status', $request->status);
-        if ($request->search)   $query->where('title', 'like', '%'.$request->search.'%');
+        if ($request->city)
+            $query->where('city', $request->city);
+        if ($request->type)
+            $query->where('type', $request->type);
+        if ($request->priority)
+            $query->where('priority', $request->priority);
+        if ($request->status)
+            $query->where('status', $request->status);
+        if ($request->search)
+            $query->where('title', 'like', '%' . $request->search . '%');
 
         $sortBy = $request->sort ?? 'latest';
-        match($sortBy) {
+        match ($sortBy) {
             'priority' => $query->orderByRaw("FIELD(priority,'critical','high','medium','low')"),
-            'damage'   => $query->orderByDesc('damage_percentage'),
+            'damage' => $query->orderByDesc('damage_percentage'),
             'progress' => $query->orderByDesc('progress_percentage'),
-            default    => $query->latest(),
+            default => $query->latest(),
         };
 
         $projects = $query->paginate(12)->withQueryString();
-        $cities   = Project::distinct()->pluck('city');
+        $cities = Project::distinct()->pluck('city');
 
         return view('projects.index', compact('projects', 'cities'));
     }
@@ -39,8 +44,8 @@ class ProjectController extends Controller
     {
         $project->load(['owner', 'volunteers.volunteerProfile', 'tasks', 'updates.author', 'donations.donor', 'ratings.rater']);
         $canApply = Auth::check() && Auth::user()->isVolunteer()
-                    && !$project->volunteers()->where('user_id', Auth::id())->exists()
-                    && $project->status === 'approved';
+            && !$project->volunteers()->where('user_id', Auth::id())->exists()
+            && $project->status === 'approved';
 
         $userApplication = Auth::check()
             ? VolunteerApplication::where('project_id', $project->id)->where('user_id', Auth::id())->first()
@@ -48,7 +53,7 @@ class ProjectController extends Controller
 
         return view('projects.show', compact('project', 'canApply', 'userApplication'));
     }
-// في حال نريد جعل السماح للمتطوع في االتطوع في مشروع قيد التنفي>
+    // في حال نريد جعل السماح للمتطوع في االتطوع في مشروع قيد التنفي>
     /*
 
 
@@ -83,25 +88,25 @@ public function show(Project $project)
         $this->authorize('create', Project::class);
 
         $data = $request->validate([
-            'title'              => 'required|string|max:255',
-            'description'        => 'required|string|min:50',
-            'type'               => 'required|in:shop,workshop,clinic,bakery,restaurant,school,mosque,pharmacy,other',
-            'priority'           => 'required|in:low,medium,high,critical',
-            'damage_percentage'  => 'required|integer|min:0|max:100',
-            'address'            => 'required|string',
-            'city'               => 'required|string|max:100',
-            'latitude'           => 'nullable|numeric',
-            'longitude'          => 'nullable|numeric',
-            'required_skills'    => 'nullable|array',
-            'volunteers_needed'  => 'required|integer|min:1|max:100',
-            'estimated_days'     => 'required|integer|min:1',
-            'estimated_cost'     => 'nullable|numeric|min:0',
-            'notes'              => 'nullable|string',
-            'before_images.*'    => 'nullable|image|max:5120',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|min:50',
+            'type' => 'required|in:shop,workshop,clinic,bakery,restaurant,school,mosque,pharmacy,other',
+            'priority' => 'required|in:low,medium,high,critical',
+            'damage_percentage' => 'required|integer|min:0|max:100',
+            'address' => 'required|string',
+            'city' => 'required|string|max:100',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'required_skills' => 'nullable|array',
+            'volunteers_needed' => 'required|integer|min:1|max:100',
+            'estimated_days' => 'required|integer|min:1',
+            'estimated_cost' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string',
+            'before_images.*' => 'nullable|image|max:5120',
         ]);
 
         $data['owner_id'] = Auth::id();
-        $data['status']   = 'pending';
+        $data['status'] = 'pending';
 
         // Handle image uploads
         if ($request->hasFile('before_images')) {
@@ -115,7 +120,7 @@ public function show(Project $project)
         $project = Project::create($data);
 
         return redirect()->route('projects.show', $project)
-                         ->with('success', 'تم إضافة مشروعك بنجاح! سيتم مراجعته من قبل الإدارة.');
+            ->with('success', 'تم إضافة مشروعك بنجاح! سيتم مراجعته من قبل الإدارة.');
     }
 
     public function edit(Project $project)
@@ -129,18 +134,18 @@ public function show(Project $project)
         $this->authorize('update', $project);
 
         $data = $request->validate([
-            'title'             => 'required|string|max:255',
-            'description'       => 'required|string|min:50',
-            'type'              => 'required|in:shop,workshop,clinic,bakery,restaurant,school,mosque,pharmacy,other',
-            'priority'          => 'required|in:low,medium,high,critical',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|min:50',
+            'type' => 'required|in:shop,workshop,clinic,bakery,restaurant,school,mosque,pharmacy,other',
+            'priority' => 'required|in:low,medium,high,critical',
             'damage_percentage' => 'required|integer|min:0|max:100',
-            'address'           => 'required|string',
-            'city'              => 'required|string|max:100',
-            'required_skills'   => 'nullable|array',
+            'address' => 'required|string',
+            'city' => 'required|string|max:100',
+            'required_skills' => 'nullable|array',
             'volunteers_needed' => 'required|integer|min:1',
-            'estimated_days'    => 'required|integer|min:1',
-            'estimated_cost'    => 'nullable|numeric|min:0',
-            'notes'             => 'nullable|string',
+            'estimated_days' => 'required|integer|min:1',
+            'estimated_cost' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string',
         ]);
 
         $project->update($data);
@@ -180,6 +185,13 @@ public function show(Project $project)
     public function complete(Project $project)
     {
         $project->update(['status' => 'completed', 'end_date' => now(), 'progress_percentage' => 100]);
+
+        // تحديث عداد "المشاريع المكتملة" لكل متطوع شارك فعلياً بهذا المشروع
+        foreach ($project->volunteers()->wherePivot('status', 'accepted')->get() as $vol) {
+            $vol->pivot->update(['status' => 'completed']);
+            $vol->volunteerProfile?->increment('completed_projects');
+        }
+
         return back()->with('success', 'تم إغلاق المشروع كمكتمل.');
     }
 
