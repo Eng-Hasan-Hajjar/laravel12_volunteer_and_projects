@@ -142,15 +142,28 @@ public function updateProfile(Request $request)
     }
 
     // ─── Leaderboard ─────────────────────────────────────────
+    // ─── Leaderboard ─────────────────────────────────────────
     public function leaderboard()
     {
-        $volunteers = User::where('role', 'volunteer')
-                         ->with('volunteerProfile')
-                         ->whereHas('volunteerProfile', fn($q) => $q->where('points', '>', 0))
-                         ->get()
-                         ->sortByDesc(fn($u) => $u->volunteerProfile->points ?? 0)
-                         ->take(20);
+        $ranked = User::where('role', 'volunteer')
+                       ->with('volunteerProfile')
+                       ->whereHas('volunteerProfile', fn($q) => $q->where('points', '>', 0))
+                       ->get()
+                       ->sortByDesc(fn($u) => $u->volunteerProfile->points ?? 0)
+                       ->values();
 
-        return view('volunteers.leaderboard', compact('volunteers'));
+        $volunteers  = $ranked->take(20);
+        $totalRanked = $ranked->count();
+
+        // ترتيب المستخدم الحالي بين كل المتطوعين، حتى لو مش ضمن أفضل 20
+        $myRank = null;
+        if (Auth::check() && Auth::user()->isVolunteer()) {
+            $index  = $ranked->search(fn($u) => $u->id === Auth::id());
+            $myRank = $index === false ? null : $index + 1;
+        }
+
+        $tiers = VolunteerProfile::badgeTiers();
+
+        return view('volunteers.leaderboard', compact('volunteers', 'totalRanked', 'myRank', 'tiers'));
     }
 }

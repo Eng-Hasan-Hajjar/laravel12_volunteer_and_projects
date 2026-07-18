@@ -45,13 +45,47 @@ class VolunteerProfile extends Model
         ];
     }
 
+    /**
+     * سلّم شارات المستوى، من الأعلى (بلاتيني) للأدنى (مبتدئ).
+     * ملاحظة مهمة: الأيقونة هون دائرة ملوّنة (⬤) وليست ميدالية (🥇)
+     * عن قصد — منشان ما تتلخبط أبداً مع ميدالية "المركز" بلوحة المتصدرين.
+     */
+    public static function badgeTiers(): array
+    {
+        return [
+            ['min' => 500, 'label' => 'بلاتيني', 'color' => '#7c3aed', 'bg' => '#f3e8ff', 'icon' => '🟣'],
+            ['min' => 200, 'label' => 'ذهبي',    'color' => '#b45309', 'bg' => '#fef3c7', 'icon' => '🟡'],
+            ['min' => 100, 'label' => 'فضي',     'color' => '#475569', 'bg' => '#f1f5f9', 'icon' => '⚪'],
+            ['min' => 50,  'label' => 'برونزي',  'color' => '#92400e', 'bg' => '#fed7aa', 'icon' => '🟤'],
+            ['min' => 0,   'label' => 'مبتدئ',   'color' => '#16a34a', 'bg' => '#dcfce7', 'icon' => '🟢'],
+        ];
+    }
+
+    /**
+     * شارة المستوى الحالية للمتطوع + نسبة التقدم نحو الشارة التالية.
+     * المفاتيح القديمة (label, color, icon) محفوظة كما هي للتوافق مع كل الصفحات
+     * التي تستخدمها حالياً (index, show, profile, dashboard)، مع إضافة مفاتيح جديدة.
+     */
     public function getBadgeAttribute(): array
     {
-        if ($this->points >= 500)      return ['label' => 'بلاتيني', 'color' => '#94a3b8', 'icon' => '🏆'];
-        if ($this->points >= 200)      return ['label' => 'ذهبي',    'color' => '#f59e0b', 'icon' => '🥇'];
-        if ($this->points >= 100)      return ['label' => 'فضي',     'color' => '#6b7280', 'icon' => '🥈'];
-        if ($this->points >= 50)       return ['label' => 'برونزي',  'color' => '#a16207', 'icon' => '🥉'];
-        return                                ['label' => 'مبتدئ',   'color' => '#4F7942', 'icon' => '🌱'];
+        $points = $this->points ?? 0;
+        $tiers  = self::badgeTiers();
+
+        foreach ($tiers as $i => $tier) {
+            if ($points >= $tier['min']) {
+                $next = $tiers[$i - 1] ?? null; // الشارة الأعلى مباشرة
+
+                return array_merge($tier, [
+                    'points_to_next' => $next ? max(0, $next['min'] - $points) : 0,
+                    'next_label'     => $next['label'] ?? null,
+                    'progress'       => $next
+                        ? min(100, round((($points - $tier['min']) / max(1, $next['min'] - $tier['min'])) * 100))
+                        : 100,
+                ]);
+            }
+        }
+
+        return array_merge(end($tiers), ['points_to_next' => 0, 'next_label' => null, 'progress' => 100]);
     }
 
     public function getSkillsArabicAttribute(): array

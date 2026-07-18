@@ -45,8 +45,8 @@ class DashboardController extends Controller
         return view('dashboard.committee', compact('user', 'stats', 'pendingProjects'));
     }
 
-    
 
+/*
     private function adminDashboard()
     {
         $stats = [
@@ -75,7 +75,54 @@ class DashboardController extends Controller
             'projectsByCity'
         ));
     }
+*/
+private function adminDashboard()
+    {
+        $user = Auth::user();
 
+        $stats = [
+            'total_users'        => User::count(),
+            'total_volunteers'   => User::where('role', 'volunteer')->count(),
+            'total_owners'       => User::where('role', 'project_owner')->count(),
+            'total_committee'    => User::where('role', 'committee')->count(),
+            'total_projects'     => Project::count(),
+            'pending_projects'   => Project::pending()->count(),
+            'active_projects'    => Project::inProgress()->count(),
+            'completed_projects' => Project::completed()->count(),
+            'total_donations'    => Donation::sum('amount'),
+        ];
+
+        // ─── بنود بانتظار إجراء (من ميزات اللجنة/المتابعة المالية) ───
+        $actionItems = [
+            'pending_verifications' => \App\Models\ProjectVerification::where('status', 'pending')->count(),
+            'pending_finance'       => \App\Models\ProjectFinance::where('status', 'pending_review')->count(),
+            'pending_consents'      => \App\Models\ProjectApproval::where('status', 'pending_review')->count(),
+        ];
+
+        // ─── ملخص مالي موثّق ومعتمد ───
+        $financeSummary = [
+            'verified_donations' => (float) \App\Models\ProjectFinance::where('entry_type', 'donation')->where('status', 'verified')->sum('amount'),
+            'verified_expenses'  => (float) \App\Models\ProjectFinance::where('entry_type', 'expense')->where('status', 'verified')->sum('amount'),
+        ];
+
+        $recentProjects = Project::with('owner')->latest()->take(5)->get();
+        $recentUsers = User::latest()->take(5)->get();
+        $announcements = Announcement::where('is_published', true)->latest()->take(3)->get();
+        $projectsByStatus = Project::selectRaw('status, COUNT(*) as count')->groupBy('status')->pluck('count', 'status');
+        $projectsByCity = Project::selectRaw('city, COUNT(*) as count')->groupBy('city')->orderByDesc('count')->take(5)->pluck('count', 'city');
+
+        return view('dashboard.admin', compact(
+            'user',
+            'stats',
+            'actionItems',
+            'financeSummary',
+            'recentProjects',
+            'recentUsers',
+            'announcements',
+            'projectsByStatus',
+            'projectsByCity'
+        ));
+    }
     private function volunteerDashboard(User $user)
     {
         $profile = $user->volunteerProfile;
