@@ -123,7 +123,7 @@
                         <td>
                             @if($f->status === 'pending_review')
                             <div class="d-flex gap-1">
-                                <form action="{{ route('finances.verify', $f) }}" method="POST">
+                                <form action="{{ route('admin.finances.verify', $f) }}" method="POST">
                                     @csrf
                                     <button class="btn btn-sm btn-success py-0 px-2" title="اعتماد"><i class="bi bi-check-lg"></i></button>
                                 </form>
@@ -136,7 +136,7 @@
                             <div class="modal fade" id="rejectModal{{ $f->id }}" tabindex="-1">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <form action="{{ route('finances.reject', $f) }}" method="POST">
+                                        <form action="{{ route('admin.finances.reject', $f) }}" method="POST">
                                             @csrf
                                             <div class="modal-header">
                                                 <h6 class="modal-title">سبب رفض الحركة المالية</h6>

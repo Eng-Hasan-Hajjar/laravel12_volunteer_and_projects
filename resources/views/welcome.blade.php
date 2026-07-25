@@ -3,6 +3,7 @@
 
 @push('styles')
 <style>
+html { scroll-behavior: smooth; }
 .hero {
     min-height: 90vh;
     background: linear-gradient(135deg, #f0faf4 0%, #e8f5ee 40%, #fff8ed 100%);
@@ -56,35 +57,85 @@
     position: relative;
     z-index: 1;
 }
-.hero-card {
+
+/* ─── Impact Showcase Card (بدون أي بيانات مشروع منفرد، فقط أرقام إجمالية بسيطة) ─── */
+.impact-card {
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.12);
+    border-radius: 20px;
+    box-shadow: 0 25px 70px rgba(0,0,0,.14);
     overflow: hidden;
     transition: transform .3s;
 }
-.hero-card:hover { transform: translateY(-6px); }
-
-.floating-stat {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.1);
-    padding: 14px 18px;
-    display: inline-flex;
+.impact-card:hover { transform: translateY(-6px); }
+.impact-header {
+    background: linear-gradient(135deg, var(--primary), #1B5E35);
+    color: #fff;
+    padding: 26px 28px;
+    display: flex;
     align-items: center;
-    gap: 12px;
-    position: absolute;
-    font-size: .88rem;
-    font-weight: 600;
-    animation: float 3s ease-in-out infinite;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
 }
-@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-.floating-stat.s1 { top: 2%; LEFT: -30px; animation-delay: 0s; }
-.floating-stat.s2 { bottom: 5%; left: -20px; animation-delay: 1.5s; }
-.floating-stat .stat-icon2 {
-    width: 38px; height: 38px; border-radius: 10px;
+.impact-header::after {
+    content: '🏗️';
+    position: absolute;
+    font-size: 6rem;
+    opacity: .1;
+    left: -10px; bottom: -25px;
+}
+.impact-header-icon {
+    width: 54px; height: 54px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.18);
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+    position: relative; z-index: 1;
+}
+.impact-header-title { font-family:'Cairo',sans-serif; font-weight:900; font-size:1.2rem; position:relative; z-index:1; }
+.impact-header-sub { font-size:.85rem; opacity:.85; margin-top:2px; position:relative; z-index:1; }
+
+.impact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+}
+.impact-tile {
+    background: #fff;
+    padding: 26px 20px;
+    text-align: center;
+    transition: background .2s;
+}
+.impact-tile:hover { background: var(--primary-pale); }
+.impact-icon {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.35rem;
+    margin: 0 auto 12px;
+}
+.impact-num {
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.9rem;
+    font-weight: 900;
+    color: var(--text-dark);
+    line-height: 1;
+}
+.impact-label {
+    font-size: .82rem;
+    color: var(--text-mid);
+    margin-top: 6px;
+    font-weight: 600;
+}
+.impact-footer {
+    padding: 14px 20px;
+    text-align: center;
+    font-size: .78rem;
+    color: var(--text-light);
+    background: #fafbfc;
+    border-top: 1px solid var(--border);
 }
 
 /* How It Works */
@@ -144,34 +195,14 @@
 }
 .stat-strip-label { font-size: .9rem; opacity: .8; margin-top: 4px; }
 
-/* Testimonial */
-.testimonial-card {
-    background: #fff;
+/* Announcements */
+.announcement-card {
     border-radius: var(--radius);
-    padding: 28px;
     border: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
     transition: all .25s;
+    height: 100%;
 }
-.testimonial-card:hover { box-shadow: var(--shadow-md); }
-.quote-mark { font-size: 3rem; color: var(--primary); line-height: .8; font-family: Georgia,serif; }
-
-/* CTA Section */
-.cta-section {
-    background: linear-gradient(135deg, var(--text-dark) 0%, #2d3748 100%);
-    padding: 80px 0;
-    color: #fff;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-.cta-section::before {
-    content: '🏗️';
-    position: absolute;
-    font-size: 15rem;
-    opacity: .04;
-    top: -20px; right: -20px;
-}
+.announcement-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
 </style>
 @endpush
 
@@ -193,8 +224,8 @@
                     منصة إلكترونية متكاملة تربط المتطوعين بمشاريع إعادة إعمار الشركات الصغيرة المتضررة. سجّل، تطوّع، وكُن جزءاً من التغيير.
                 </p>
                 <div class="d-flex gap-3 flex-wrap mt-4">
-                    <a href="{{ route('register') }}" class="btn btn-primary btn-lg px-4" style="border-radius:12px;font-weight:700;">
-                        <i class="bi bi-person-plus me-2"></i>انضم الآن مجاناً
+                    <a href="#join" class="btn btn-primary btn-lg px-4" style="border-radius:12px;font-weight:700;">
+                        <i class="bi bi-signpost-2 me-2"></i>ابدأ رحلتك معنا
                     </a>
                     <a href="{{ route('projects.index') }}" class="btn btn-outline-primary btn-lg px-4" style="border-radius:12px;font-weight:700;">
                         <i class="bi bi-eye me-2"></i>تصفح المشاريع
@@ -214,51 +245,38 @@
             </div>
             <div class="col-lg-6 hero-visual">
                 <div class="position-relative px-4">
-                    <div class="hero-card">
-                        <div style="background:linear-gradient(135deg,var(--primary),#1B5E35);padding:24px;color:#fff;">
-                            <div class="d-flex align-items-center gap-3 mb-3">
-                                <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🏪</div>
-                                <div>
-                                    <div style="font-weight:700;">إعادة إعمار محل بقالة</div>
-                                    <div style="font-size:.8rem;opacity:.8;">حلب - الأولوية: حرجة</div>
-                                </div>
-                            </div>
-                            <div style="background:rgba(255,255,255,.15);border-radius:8px;padding:10px 14px;font-size:.88rem;">
-                                نسبة الضرر: 85% | متطوعون مطلوبون: 5
+                    <div class="impact-card">
+                        <div class="impact-header">
+                            <div class="impact-header-icon">🏗️</div>
+                            <div>
+                                <div class="impact-header-title">أثرنا سوا</div>
+                                <div class="impact-header-sub">أرقام حقيقية من مجتمعنا المتنامي</div>
                             </div>
                         </div>
-                        <div style="padding:20px;">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span style="font-size:.85rem;font-weight:600;color:var(--text-mid);">تقدم المشروع</span>
-                                <span style="font-size:.85rem;font-weight:700;color:var(--primary);">40%</span>
+                        <div class="impact-grid">
+                            <div class="impact-tile">
+                                <div class="impact-icon" style="background:var(--primary-pale);color:var(--primary);">🏗️</div>
+                                <div class="impact-num">{{ number_format($totalProjects) }}</div>
+                                <div class="impact-label">مشروع مسجّل</div>
                             </div>
-                            <div class="progress mb-3">
-                                <div class="progress-bar" style="width:40%"></div>
+                            <div class="impact-tile">
+                                <div class="impact-icon" style="background:var(--accent-light);color:var(--accent);">🙋</div>
+                                <div class="impact-num">{{ number_format($totalVolunteers) }}</div>
+                                <div class="impact-label">متطوع فعّال</div>
                             </div>
-                            <div class="d-flex gap-2">
-                                <span class="badge priority-critical">حرج</span>
-                                <span class="badge status-in_progress">جارٍ التنفيذ</span>
+                            <div class="impact-tile">
+                                <div class="impact-icon" style="background:#dcfce7;color:#15803d;">✅</div>
+                                <div class="impact-num">{{ number_format($totalCompleted) }}</div>
+                                <div class="impact-label">مشروع مكتمل</div>
                             </div>
-                            <div class="d-flex align-items-center gap-2 mt-3">
-                                @for($i = 0; $i < 4; $i++)
-                                    <img src="https://ui-avatars.com/api/?name=م{{ $i+1 }}&background=4F7942&color=fff&size=32" style="width:32px;height:32px;border-radius:50%;border:2px solid #fff;margin-right:-8px;">
-                                @endfor
-                                <span style="font-size:.8rem;color:var(--text-mid);margin-right:12px;">3 متطوعون نشطون</span>
+                            <div class="impact-tile">
+                                <div class="impact-icon" style="background:#fef3c7;color:#b45309;">🏪</div>
+                                <div class="impact-num">{{ number_format($totalOwners) }}</div>
+                                <div class="impact-label">صاحب مشروع</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="floating-stat s1">
-                        <div class="stat-icon2" style="background:var(--primary-pale);color:var(--primary);">✅</div>
-                        <div>
-                            <div style="font-size:1.1rem;font-weight:900;color:var(--primary);">{{ \App\Models\Project::where('status','completed')->count() }}</div>
-                            <div style="font-size:.75rem;color:var(--text-mid);">مشروع مكتمل</div>
-                        </div>
-                    </div>
-                    <div class="floating-stat s2">
-                        <div class="stat-icon2" style="background:var(--accent-light);color:var(--accent);">🙋</div>
-                        <div>
-                            <div style="font-size:1.1rem;font-weight:900;color:var(--accent);">{{ \App\Models\User::where('role','volunteer')->count() }}</div>
-                            <div style="font-size:.75rem;color:var(--text-mid);">متطوع مسجّل</div>
+                        <div class="impact-footer">
+                            <i class="bi bi-arrow-repeat me-1"></i>الأرقام تتحدّث تلقائياً لحظة بلحظة
                         </div>
                     </div>
                 </div>
@@ -273,10 +291,10 @@
         <div class="row g-4">
             @php
                 $statItems = [
-                    ['num' => \App\Models\Project::count(),                              'label' => 'مشروع مسجّل',    'icon' => '🏗️'],
-                    ['num' => \App\Models\User::where('role','volunteer')->count(),       'label' => 'متطوع فعّال',    'icon' => '🙋'],
-                    ['num' => \App\Models\Project::where('status','completed')->count(), 'label' => 'مشروع مكتمل',   'icon' => '✅'],
-                    ['num' => \App\Models\User::where('role','project_owner')->count(),  'label' => 'صاحب مشروع',    'icon' => '🏪'],
+                    ['num' => $totalProjects,   'label' => 'مشروع مسجّل',  'icon' => '🏗️'],
+                    ['num' => $totalVolunteers, 'label' => 'متطوع فعّال',  'icon' => '🙋'],
+                    ['num' => $totalCompleted,  'label' => 'مشروع مكتمل', 'icon' => '✅'],
+                    ['num' => $totalOwners,     'label' => 'صاحب مشروع',  'icon' => '🏪'],
                 ];
             @endphp
             @foreach($statItems as $s)
@@ -333,7 +351,7 @@
             <a href="{{ route('projects.index') }}" class="btn btn-outline-primary btn-sm">عرض الكل <i class="bi bi-arrow-left ms-1"></i></a>
         </div>
         <div class="row g-4">
-            @foreach(\App\Models\Project::whereIn('status',['approved','in_progress'])->latest()->take(3)->get() as $project)
+            @forelse($featuredProjects as $project)
                 <div class="col-md-4">
                     <div class="card project-card h-100">
                         <div class="card-img-placeholder" style="background:var(--primary-pale);">
@@ -363,20 +381,23 @@
                         </div>
                     </div>
                 </div>
-            @endforeach
+            @empty
+                <div class="col-12 text-center text-muted py-4">لا توجد مشاريع منشورة بعد</div>
+            @endforelse
         </div>
     </div>
 </section>
 
-{{-- ═══════════ JOIN AS ══════════════ --}}
-<section class="py-5">
+{{-- ═══════════ JOIN AS (نقطة الدخول الوحيدة للتسجيل) ══════════════ --}}
+<section class="py-5" id="join">
     <div class="container">
         <div class="text-center mb-5">
             <h2 style="font-family:'Cairo',sans-serif;font-weight:900;font-size:1.8rem;">كيف تريد المشاركة؟</h2>
+            <p style="color:var(--text-mid);">اختر الدور المناسب إلك، وبيتحدد تلقائياً بصفحة التسجيل</p>
         </div>
         <div class="row g-4 justify-content-center">
             <div class="col-md-5">
-                <a href="{{ route('register') }}" class="role-card volunteer">
+                <a href="{{ route('register', ['role' => 'volunteer']) }}" class="role-card volunteer">
                     <div class="role-icon">🙋</div>
                     <h4 style="font-family:'Cairo',sans-serif;font-weight:900;color:var(--primary);">متطوع</h4>
                     <p style="color:var(--text-mid);font-size:.95rem;margin:12px 0;">قدّم مهاراتك في النجارة، الكهرباء، البناء، وغيرها لمساعدة المتضررين.</p>
@@ -384,7 +405,7 @@
                 </a>
             </div>
             <div class="col-md-5">
-                <a href="{{ route('register') }}" class="role-card owner">
+                <a href="{{ route('register', ['role' => 'project_owner']) }}" class="role-card owner">
                     <div class="role-icon">🏪</div>
                     <h4 style="font-family:'Cairo',sans-serif;font-weight:900;color:#b45309;">صاحب مشروع</h4>
                     <p style="color:var(--text-mid);font-size:.95rem;margin:12px 0;">سجّل مشروعك المتضرر واحصل على دعم المتطوعين لإعادة الإعمار بسرعة.</p>
@@ -395,20 +416,32 @@
     </div>
 </section>
 
-{{-- ═══════════ CTA ══════════════ --}}
-<section class="cta-section">
-    <div class="container position-relative">
-        <h2 style="font-family:'Cairo',sans-serif;font-weight:900;font-size:2.2rem;margin-bottom:16px;">ابدأ رحلتك التطوعية اليوم</h2>
-        <p style="font-size:1.05rem;opacity:.8;max-width:500px;margin:0 auto 32px;">انضم لآلاف المتطوعين الذين يُغيّرون حياة الناس ويُعيدون بناء المجتمع حجراً حجراً.</p>
-        <div class="d-flex gap-3 justify-content-center flex-wrap">
-            <a href="{{ route('register') }}" class="btn btn-lg px-5 fw-bold" style="background:var(--accent);color:var(--text-dark);border-radius:12px;">
-                <i class="bi bi-person-plus me-2"></i>انضم مجاناً
-            </a>
-            <a href="{{ route('projects.index') }}" class="btn btn-lg btn-outline-light px-5 fw-bold" style="border-radius:12px;">
-                <i class="bi bi-buildings me-2"></i>تصفح المشاريع
-            </a>
+{{-- ═══════════ ANNOUNCEMENTS ══════════════ --}}
+@if($announcements->isNotEmpty())
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span style="background:var(--accent-light);color:var(--accent);border-radius:25px;padding:5px 18px;font-size:.85rem;font-weight:600;">آخر الأخبار</span>
+            <h2 class="mt-3" style="font-family:'Cairo',sans-serif;font-weight:900;font-size:2rem;">إعلانات المنصة</h2>
+        </div>
+        <div class="row g-4">
+            @foreach($announcements as $a)
+                <div class="col-md-4">
+                    <div class="card announcement-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-megaphone-fill" style="color:var(--accent);"></i>
+                                <small class="text-muted">{{ $a->created_at->diffForHumans() }}</small>
+                            </div>
+                            <h6 class="fw-bold mb-2">{{ $a->title }}</h6>
+                            <p class="text-muted small mb-0">{{ Str::limit($a->content, 110) }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
 </section>
+@endif
 
 @endsection

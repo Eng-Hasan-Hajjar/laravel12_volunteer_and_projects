@@ -15,7 +15,7 @@ class HomeController extends Controller
                 ->get();
 
             $totalProjects   = (int) Project::count();
-            $totalVolunteers = (int) User::where('role', 'volunteer')->count();
+            $totalVolunteers = (int) User::where('role', 'volunteer')->where('is_active', true)->count();
             $totalCompleted  = (int) Project::where('status', 'completed')->count();
             $totalOwners     = (int) User::where('role', 'project_owner')->count();
 
@@ -43,4 +43,4 @@ class HomeController extends Controller
             'announcements'
         ));
     }
-}
+}   

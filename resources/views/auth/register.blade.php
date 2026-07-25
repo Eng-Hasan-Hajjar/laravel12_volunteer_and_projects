@@ -80,8 +80,8 @@
                 <label class="form-label d-block mb-2">أنا أريد التسجيل كـ</label>
                 <div class="role-selector">
                     <div class="role-option">
-                        <input type="radio" name="role" id="role_volunteer" value="volunteer"
-                            {{ old('role','volunteer') === 'volunteer' ? 'checked' : '' }}>
+                       <input type="radio" name="role" id="role_volunteer" value="volunteer"
+                            {{ old('role', request('role', 'volunteer')) === 'volunteer' ? 'checked' : '' }}>
                         <label for="role_volunteer">
                             <span class="role-emoji">🙋</span>
                             <span class="role-name">متطوع</span>
@@ -90,7 +90,7 @@
                     </div>
                     <div class="role-option">
                         <input type="radio" name="role" id="role_owner" value="project_owner"
-                            {{ old('role') === 'project_owner' ? 'checked' : '' }}>
+                            {{ old('role', request('role')) === 'project_owner' ? 'checked' : '' }}>
                         <label for="role_owner">
                             <span class="role-emoji">🏪</span>
                             <span class="role-name">صاحب مشروع</span>

@@ -156,7 +156,7 @@
                 <div class="modal fade" id="approveModal{{ $approval->id }}" tabindex="-1">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <form action="{{ route('approvals.approve', $approval) }}" method="POST">
+                            <form action="{{ route('admin.approvals.approve', $approval) }}" method="POST">
                                 @csrf
                                 <div class="modal-header">
                                     <h6 class="modal-title">اعتماد مستند الموافقة</h6>
@@ -178,7 +178,7 @@
                 <div class="modal fade" id="rejectApprovalModal{{ $approval->id }}" tabindex="-1">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <form action="{{ route('approvals.reject', $approval) }}" method="POST">
+                            <form action="{{ route('admin.approvals.reject', $approval) }}" method="POST">
                                 @csrf
                                 <div class="modal-header">
                                     <h6 class="modal-title">رفض مستند الموافقة</h6>
