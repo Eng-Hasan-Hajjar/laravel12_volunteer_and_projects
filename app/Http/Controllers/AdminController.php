@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{User, Project, Task, Donation, Announcement, Rating};
+use App\Models\{User, Project, Task, Donation, Announcement, Rating, VolunteerApplication};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -43,10 +44,56 @@ class AdminController extends Controller
         return back()->with('success', "تم {$status} الحساب بنجاح.");
     }
 
-    public function deleteUser(User $user)
+  public function deleteUser(User $user)
     {
-        $user->delete();
+        DB::transaction(function () use ($user) {
+            if ($user->isVolunteer()) {
+                $this->cleanupVolunteerBeforeDelete($user);
+            }
+
+            $user->delete();
+        });
+
         return redirect()->route('admin.users')->with('success', 'تم حذف المستخدم.');
+    }
+
+    /**
+     * تنظيف الارتباطات النشطة لمتطوع قبل حذف حسابه:
+     * 1) إلغاء إسناد أي مهام غير مكتملة له (تصير متاحة لإعادة الإسناد لمتطوع آخر)
+     * 2) رفض أي طلبات تطوع معلّقة تلقائياً
+     * 3) إنقاص عداد volunteers_assigned وتحويل حالة انضمامه لكل مشروع كان مقبولاً فيه إلى "removed"
+     *
+     * ملاحظة: لا نلمس ملفه الشخصي (VolunteerProfile) ولا نقاطه أو ساعاته أو مشاريعه المكتملة —
+     * هذا سجل تاريخي حقيقي ويبقى محفوظاً كما هو حتى بعد حذف الحساب.
+     */
+    private function cleanupVolunteerBeforeDelete(User $user): void
+    {
+        // 1) إلغاء إسناد المهام غير المكتملة، لتصير متاحة لإعادة الإسناد
+        Task::where('assigned_to', $user->id)
+            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->update([
+                'assigned_to' => null,
+                'status'      => 'pending',
+            ]);
+
+        // 2) رفض طلبات التطوع المعلّقة تلقائياً
+        VolunteerApplication::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->update([
+                'status'           => 'rejected',
+                'rejection_reason' => 'تم إلغاء الطلب تلقائياً بسبب حذف حساب المتطوع.',
+            ]);
+
+        // 3) تحديث كل مشروع كان منضماً له فعلياً (حالة accepted فقط)
+        $acceptedProjects = $user->assignedProjects()->wherePivot('status', 'accepted')->get();
+
+        foreach ($acceptedProjects as $project) {
+            if ($project->volunteers_assigned > 0) {
+                $project->decrement('volunteers_assigned');
+            }
+
+            $project->volunteers()->updateExistingPivot($user->id, ['status' => 'removed']);
+        }
     }
 
     // ─── Projects Management ─────────────────────────────────
