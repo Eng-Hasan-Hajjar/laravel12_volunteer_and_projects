@@ -127,9 +127,9 @@
                 @forelse($recentApplications as $app)
                 <div class="p-3 border-bottom">
                     <div class="d-flex gap-2 align-items-center mb-2">
-                        <img src="{{ $app->volunteer->avatar_url }}" style="width:32px;height:32px;border-radius:50%;">
+                        <img src="{{ $app->volunteer?->avatar_url ?? 'https://ui-avatars.com/api/?name=X&background=cbd5e1&color=fff' }}" style="width:32px;height:32px;border-radius:50%;">
                         <div>
-                            <div style="font-weight:600;font-size:.88rem;">{{ $app->volunteer->name }}</div>
+                            <div style="font-weight:600;font-size:.88rem;">{{ $app->volunteer->name ?? 'متطوع محذوف' }}</div>
                             <small class="text-muted">{{ Str::limit($app->project->title,30) }}</small>
                         </div>
                         <span class="badge status-{{ $app->status }} ms-auto" style="font-size:.7rem;">{{ $app->status_arabic }}</span>

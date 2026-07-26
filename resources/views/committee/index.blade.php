@@ -31,7 +31,7 @@
                 <tr>
                     <td><span class="text-muted">#{{ $project->id }}</span></td>
                     <td style="font-weight:600;">{{ Str::limit($project->title, 40) }}</td>
-                    <td>{{ $project->owner->name }}</td>
+                    <td>{{ $project->owner->name ?? 'مستخدم محذوف' }}</td>
                     <td>{{ $project->city }}</td>
                     <td>
                         <span style="font-weight:700;color:{{ $project->priority_color }};">

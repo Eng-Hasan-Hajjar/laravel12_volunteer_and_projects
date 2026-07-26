@@ -213,7 +213,7 @@
                 <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
                     <div>
                         <div style="font-weight:700;font-size:.9rem;">#{{ $p->id }} — {{ Str::limit($p->title, 35) }}</div>
-                        <small class="text-muted">{{ $p->owner->name }} · {{ $p->city }}</small>
+                        <small class="text-muted">{{ $p->owner->name ?? 'مستخدم محذوف' }} · {{ $p->city }}</small>
                     </div>
                     <span class="badge status-{{ $p->status }}">{{ $p->status_arabic }}</span>
                 </div>

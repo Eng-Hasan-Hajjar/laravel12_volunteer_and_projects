@@ -72,7 +72,7 @@
                                     <div style="font-weight:600;font-size:.9rem;">
                                         {{ Str::limit($p->title, 35) }}
                                     </div>
-                                    <small class="text-muted">{{ $p->owner->name }}</small>
+                                    <small class="text-muted">{{ $p->owner->name ?? 'مستخدم محذوف' }}</small>
                                 </td>
                                 <td>
                                     <span class="badge status-{{ $p->status }}">

@@ -13,7 +13,7 @@
                 <h6 style="font-weight:700;margin-bottom:4px;">{{ $app->project->title }}</h6>
                 <div class="d-flex gap-2 align-items-center flex-wrap">
                     <span class="text-muted" style="font-size:.85rem;"><i class="bi bi-geo-alt me-1"></i>{{ $app->project->city }}</span>
-                    <span class="text-muted" style="font-size:.85rem;">بواسطة: {{ $app->project->owner->name }}</span>
+                    <span class="text-muted" style="font-size:.85rem;">بواسطة: {{ $app->project->owner->name ?? 'مستخدم محذوف' }}</span>
                 </div>
             </div>
             <div class="text-end">

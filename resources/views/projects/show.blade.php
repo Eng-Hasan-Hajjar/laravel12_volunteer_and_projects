@@ -45,7 +45,7 @@
 
                     <div class="d-flex flex-wrap gap-4 text-muted mb-4" style="font-size:.9rem;">
                         <span><i class="bi bi-geo-alt me-1"></i>{{ $project->address }}، {{ $project->city }}</span>
-                        <span><i class="bi bi-person me-1"></i>{{ $project->owner->name }}</span>
+                        <span><i class="bi bi-person me-1"></i>{{ $project->owner->name ?? 'مستخدم محذوف' }}</span>
                         <span><i class="bi bi-calendar3 me-1"></i>{{ $project->created_at->format('d M Y') }}</span>
                         @if($project->estimated_days)
                             <span><i class="bi bi-clock me-1"></i>{{ $project->estimated_days }} يوم تقديري</span>
@@ -198,7 +198,7 @@
                                     <span
                                         style="background:var(--primary-pale);color:var(--primary);border-radius:20px;padding:2px 10px;font-size:.78rem;font-weight:600;">{{ $update->progress_percentage }}%
                                         تقدم</span>
-                                    <small class="text-muted ms-2">بواسطة {{ $update->author->name }}</small>
+                                    <small class="text-muted ms-2">بواسطة {{ $update->author->name ?? 'مستخدم محذوف' }}</small>
                                 </div>
                             </div>
                         @endforeach

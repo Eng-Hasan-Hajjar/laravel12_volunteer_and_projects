@@ -55,7 +55,7 @@
             <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
                 <div>
                     <div style="font-weight:700;">#{{ $project->id }} — {{ Str::limit($project->title, 45) }}</div>
-                    <small class="text-muted">{{ $project->owner->name }} · {{ $project->city }} · ضرر {{ $project->damage_percentage }}%</small>
+                    <small class="text-muted">{{ $project->owner->name ?? 'مستخدم محذوف' }} · {{ $project->city }} · ضرر {{ $project->damage_percentage }}%</small>
                 </div>
                 <a href="{{ route('committee.show', $project) }}" class="btn btn-sm btn-primary">مراجعة</a>
             </div>

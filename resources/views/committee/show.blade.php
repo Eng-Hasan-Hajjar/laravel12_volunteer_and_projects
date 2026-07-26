@@ -17,7 +17,7 @@
                         <strong>عنوان المشروع:</strong> {{ $project->title }}
                     </div>
                     <div class="col-md-6">
-                        <strong>صاحب المشروع:</strong> {{ $project->owner->name }}
+                        <strong>صاحب المشروع:</strong> {{ $project->owner->name ?? 'مستخدم محذوف' }}
                     </div>
                 </div>
 
